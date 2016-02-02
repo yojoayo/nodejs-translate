@@ -1,7 +1,7 @@
 {
-  "name": "nodejs-ex",
+  "name": "nodejs-translate",
   "version": "0.0.1",
-  "description": "Node.js sample app for OpenShift 3",
+  "description": "Node.js app",
   "main": "server.js",
   "dependencies": {
       "express": "*",
@@ -17,12 +17,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "http://github.com/openshift/nodejs-ex.git"
+    "url": "https://github.com/yojoayo/nodejs-translate.git"
   },
-  "author": "Steve Speicher <sspeiche@gmail.com>",
+  "author": "",
   "license": "",
   "bugs": {
-    "url": "http://github.com/openshift/nodejs-ex/issues"
+    "url": "https://github.com/yojoayo/nodejs-translate/issues"
   },
-  "homepage": "http://github.com/openshift/nodejs-ex"
+  "homepage": "https://github.com/yojoayo/nodejs-translate"
 }
