@@ -1,8 +1,10 @@
 //  OpenShift sample Node application
-var express = require('express');
-var fs      = require('fs');
-var app     = express();
-var eps     = require('ejs');
+var express   = require('express');
+var fs        = require('fs');
+var app       = express();
+var eps       = require('ejs');
+var cors      = require('cors');
+var translate = require('lib/translate');
 
 app.engine('html', require('ejs').renderFile);
 
@@ -26,51 +28,41 @@ if (mongoURL == null && process.env.DATABASE_SERVICE_NAME) {
     mongoURL += mongoHost + ':' + mongoPort + '/' + process.env.MONGODB_DATABASE;
   }
 }
-var db = null;
-var dbDetails = new Object();
 
-var initDb = function(callback) {
-  if (mongoURL == null) return;
+app.use(cors());
 
-  var mongodb = require('mongodb');  
-  if (mongodb == null) return;
 
-  mongodb.connect(mongoURL, function(err, conn) {
-    if (err) {
-      callback(err);
-      return;
-    }
-
-    db = conn;
-    dbDetails.databaseName = db.databaseName;
-    dbDetails.url = mongoURLLabel;
-    dbDetails.type = 'MongoDB';
-
-    console.log("Connected to MongoDB at: " + mongoURL);
-  });
-};
 
 app.get('/', function (req, res) {
-  if (db) {
-    var col = db.collection('counts');
-    // Create a document with request IP and current time of request
-    col.insert({ip: req.ip, date: Date.now()});
-    col.count(function(err, count){
-      res.render('index.html', { pageCountMessage : count, dbInfo: dbDetails });
-    });
-  } else {
     res.render('index.html', { pageCountMessage : null});
-  }
+ });
+
+app.get('/translate/:sl/:tl/:text', function (req, res) {
+	var text = req.params.text,
+		sl = req.params.sl,
+		tl = req.params.tl;
+	translate({
+		text: text,
+		source: sl || 'es',
+		target: tl || 'en'
+	}, function (translation) {
+		res.send({
+			"translation": translation
+		});
+	});
 });
 
-app.get('/pagecount', function (req, res) {
-  if (db) {
-    db.collection('counts').count(function(err, count ){
-      res.send('{ pageCount: ' + count +'}');
-    });
-  } else { 
-    res.send('{ pageCount: -1 }');
-  }
+app.get('/translate/:text', function (req, res) {
+	var text = req.params.text;
+	translate({
+		text: text,
+		source: 'es',
+		target: 'en'
+	}, function (translation) {
+		res.send({
+			"translation": translation
+		});
+	});
 });
 
 // error handling
